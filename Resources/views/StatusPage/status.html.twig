@@ -1,0 +1,52 @@
+{% extends 'JhgStatusPageBundle::layout.html.twig' %}
+
+{% block status_content %}
+    <h1>Status page</h1>
+
+    <section class="metric">
+        <header>
+            <h2>Requests (last 60 minutes)</h2>
+        </header>
+
+        <div class="metric-data">
+            <div class="info">
+                <p>{{ requestKeysData|status_sum|round }} reqs</p>
+                <p>{{ requestKeysData|status_average|round }} req/minute</p>
+            </div>
+            <div class="graph">
+                <span class="line" style="display:none">{{ requestKeysData|join(',') }}</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="metric">
+        <header>
+            <h2>Response time (last 60 minutes)</h2>
+        </header>
+
+        <div class="metric-data">
+            <div class="info">
+                <p>Average response time: {{ ((responseTimeKeysData|status_sum()) / (requestKeysData|status_sum ? : 1)) |round }} ms</p>
+            </div>
+            <div class="graph">
+                <span class="line" style="display:none">{{ responseTimeKeysData|join(',') }}</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="metric">
+        <header>
+            <h2>Exceptions (last 60 minutes)</h2>
+        </header>
+
+        <div class="metric-data">
+            <div class="info">
+                {{ exceptionData|status_sum }}
+                <p>Exceptions: {{ ((exceptionData|status_sum) * 100 / (requestKeysData|status_sum ? : 1)) |round(4) }} %</p>
+            </div>
+            <div class="graph">
+                <span class="line" style="display:none">{{ exceptionData|join(',') }}</span>
+            </div>
+        </div>
+    </section>
+{% endblock status_content %}

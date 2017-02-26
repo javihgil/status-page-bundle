@@ -1,0 +1,18 @@
+{
+    "name": "javihgil/status-page-bundle",
+    "license": "MIT",
+    "description": "Stores some metrics in Redis and provides a status page for Symfony projects",
+    "prefer-stable": true,
+    "minimum-stability": "dev",
+    "require": {
+        "snc/redis-bundle": "^2.0.0"
+    },
+    "suggest": {
+        "guzzlehttp/guzzle": "If you use guzzlehttp to call external services, StatusPageBundle can store request stats"
+    },
+    "autoload": {
+        "psr-4": {
+            "Jhg\\StatusPageBundle\\": ""
+        }
+    }
+}

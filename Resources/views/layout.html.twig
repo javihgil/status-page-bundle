@@ -1,0 +1,55 @@
+<html>
+<head>
+    <title>Status page</title>
+    <style type="text/css">
+        .status-content {
+            float: none;
+            margin: auto;
+            width: 800px;
+        }
+
+        .metric header h2 {
+            font-size: 16px;
+            text-transform: uppercase;
+        }
+
+        .metric .metric-data {
+            position: relative;
+            float: left;
+            width: 100%;
+        }
+
+        .metric .metric-data .info {
+            position: relative;
+            float: left;
+            width: 50%;
+            height: 150px;
+        }
+    </style>
+</head>
+<body>
+<div class="status-content">
+{% block status_content %}
+{% endblock status_content %}
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/peity/3.2.1/jquery.peity.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $.fn.peity.defaults.line = {
+            delimiter: ",",
+            fill: "#c6d9fd",
+            height: 80,
+            max: null,
+            min: 0,
+            stroke: "#4d89f9",
+            strokeWidth: 1,
+            width: 250
+        }
+
+        $(".line").show().peity("line");
+    });
+</script>
+</body>
+</html>

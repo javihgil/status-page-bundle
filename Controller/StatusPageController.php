@@ -3,52 +3,77 @@
 namespace Jhg\StatusPageBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
+use Symfony\Component\HttpFoundation\Response;
 
 class StatusPageController extends Controller
 {
-    public function statusAction()
+    public function viewAction($view, $maxAge = null)
     {
-        $date = new \DateTime('-60 minutes');
-        $now = new \DateTime('now');
+        $viewConfig = $this->getViewConfig($view);
+        $metricsConfig = $this->getParameter('jhg_status_page.metrics');
 
-        $requestKeys = [];
-        $responseTimeKeys = [];
-        $exceptionKeys = [];
-
-        while ($date->format('YmdHi') <= $now->format('YmdHi')) {
-            $requestKeys[] = $date->format('YmdHi').':request';
-            $responseTimeKeys[] = $date->format('YmdHi').':response-time';
-            $exceptionKeys[] = $date->format('YmdHi').':exceptions';
-            $date->modify('+1 minute');
+        $metrics = [];
+        foreach ($viewConfig['metrics'] as $id => $metric) {
+            $metrics[$id] = [
+                'title' => $metric['title'],
+                'average_by' => !empty($metric['average_by']) ? $metric['average_by'] : null,
+                'data' => $this->getMetricData($metric['period'], $metricsConfig[$metric['metric_id']]),
+                'type' => $metricsConfig[$metric['metric_id']]['type'],
+            ];
         }
 
-        $requestKeysData = $this->get('snc_redis.status')->mget($requestKeys);
-        $responseTimeKeysData = $this->get('snc_redis.status')->mget($responseTimeKeys);
-        $exceptionData = $this->get('snc_redis.status')->mget($exceptionKeys);
-
-        $requestKeysData = array_map(function ($v) { return (int) $v; }, $requestKeysData);
-        $responseTimeKeysData = array_map(function ($v) { return (int) $v; }, $responseTimeKeysData);
-        $exceptionData = array_map(function ($v) { return (int) $v; }, $exceptionData);
+        foreach ($metrics as $id => $metric) {
+            if ($metric['average_by']) {
+                foreach ($metric['data'] as $k => $v) {
+                    $metrics[$id]['data'][$k] = round($v / ($metrics[$metric['average_by']]['data'][$k] ? : 1));
+                }
+            }
+//            if ($metric['percentage_by']) {
+//                foreach ($metric['data'] as $k => $v) {
+//                    $metrics[$id]['data'][$k] = round($v / ($metrics[$metric['average_by']]['data'][$k] ? : 1));
+//                }
+//            }
+        }
 
         $viewData = [
-            'requestKeysData' => $requestKeysData,
-            'responseTimeKeysData' => $responseTimeKeysData,
-            'exceptionData' => $exceptionData,
+            'metrics' => $metrics,
         ];
 
-        return $this->render('JhgStatusPageBundle:StatusPage:status.html.twig', $viewData);
+        $response = new Response();
+
+        if ($maxAge) {
+            $response->setMaxAge($maxAge);
+            $response->setPublic();
+        }
+
+        return $this->render($viewConfig['template'], $viewData, $response);
+    }
+
+    /**
+     * @param string $view
+     *
+     * @return array
+     */
+    protected function getViewConfig($view)
+    {
+        $viewsConfig = $this->getParameter('jhg_status_page.views');
+
+        if (!isset($viewsConfig[$view])) {
+            throw new InvalidConfigurationException(sprintf('Invalid view %s configured for status page', $view));
+        }
+
+        return $viewsConfig[$view];
     }
 
     /**
      * @param string $period
-     * @param string $metricId
+     * @param array  $metric
      *
      * @return array
      */
-    protected function getMetricData($period, $metricId)
+    protected function getMetricData($period, array $metric)
     {
-        $metric = $this->getParameter('jhg_status_page.metrics')[$metricId];
-
         $date = new \DateTime($period);
         $now = new \DateTime('now');
 

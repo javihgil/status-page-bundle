@@ -45,6 +45,27 @@ class Configuration implements ConfigurationInterface
                         ->end() // prototype-children
                     ->end() // prototype
                 ->end() // array
+
+                ->arrayNode('views')
+                    ->useAttributeAsKey('id')
+                    ->prototype('array')
+                        ->children()
+                            ->scalarNode('template')->defaultValue('JhgStatusPageBundle:StatusPage:status.html.twig')->end()
+                            ->arrayNode('metrics')
+                                ->useAttributeAsKey('id')
+                                ->prototype('array')
+                                    ->children()
+                                        ->scalarNode('metric_id')->isRequired()->end()
+                                        ->scalarNode('title')->isRequired()->end()
+                                        ->scalarNode('period')->isRequired()->end()
+                                        ->scalarNode('average_by')->end()
+                                        ->scalarNode('percentage_by')->end()
+                                    ->end() // prototype-children
+                                ->end() // prototype
+                            ->end() // array
+                        ->end() // prototype-children
+                    ->end() // prototype
+                ->end() // array
             ->end() // root->children
         ;
 

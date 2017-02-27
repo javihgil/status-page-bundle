@@ -23,15 +23,20 @@ class JhgStatusPageExtension extends Extension
         $container->setParameter('jhg_status_page.predis_client_id', $config['predis_client_id']);
         $container->setParameter('jhg_status_page.auto_register_guzzle_middleware', $config['auto_register_guzzle_middleware']);
         $container->setParameter('jhg_status_page.watchdogs', $config['watchdogs']);
+        $container->setParameter('jhg_status_page.views', $config['views']);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
 
+        $metrics = [];
         $loadGuzzleMiddleware = false;
         foreach ($config['metrics'] as $metricId => $metric) {
             $loadGuzzleMiddleware |= in_array($metric['type'], ['guzzle_request_counter', 'guzzle_response_count', 'guzzle_response_time']);
             $this->loadMetric($metric + ['id' => $metricId], $container);
+            $metrics[$metricId] = $metric + ['id' => $metricId];
         }
+
+        $container->setParameter('jhg_status_page.metrics', $metrics);
 
         if ($loadGuzzleMiddleware) {
             $loader->load('services/guzzle-middleware.yml');

@@ -33,23 +33,9 @@
 {% endblock status_content %}
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/peity/3.2.1/jquery.peity.min.js"></script>
-<script type="text/javascript">
-    $(document).ready(function() {
-        $.fn.peity.defaults.line = {
-            delimiter: ",",
-            fill: "#c6d9fd",
-            height: 80,
-            max: null,
-            min: 0,
-            stroke: "#4d89f9",
-            strokeWidth: 1,
-            width: 250
-        }
-
-        $(".line").show().peity("line");
-    });
-</script>
+{% block status_javascripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/peity/3.2.1/jquery.peity.min.js"></script>
+{% endblock status_javascripts %}
 </body>
 </html>

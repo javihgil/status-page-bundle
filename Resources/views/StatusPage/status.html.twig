@@ -3,50 +3,45 @@
 {% block status_content %}
     <h1>Status page</h1>
 
-    <section class="metric">
-        <header>
-            <h2>Requests (last 60 minutes)</h2>
-        </header>
+    {% for metric in metrics %}
+        <section class="metric">
+            <header>
+                <h2>{{ metric.title }}</h2>
+            </header>
 
-        <div class="metric-data">
-            <div class="info">
-                <p>{{ requestKeysData|status_sum|round }} reqs</p>
-                <p>{{ requestKeysData|status_average|round }} req/minute</p>
+            <div class="metric-data">
+                <div class="info">
+                    {% if metric.type in ['request_count', 'response_count', 'guzzle_request_count', 'guzzle_response_count', 'custom', 'exception'] %}
+                        <p>{{ metric.data|status_sum|round }} reqs</p>
+                        <p>{{ metric.data|status_average|round }} req/minute</p>
+                    {% elseif metric.average_by %}
+                        <p>Average: {{ metric.data|status_average|round }} ms</p>
+                    {% endif %}
+                </div>
+                <div class="graph">
+                    <span class="line" style="display:none">{{ metric.data|join(',') }}</span>
+                </div>
             </div>
-            <div class="graph">
-                <span class="line" style="display:none">{{ requestKeysData|join(',') }}</span>
-            </div>
-        </div>
-    </section>
-
-    <section class="metric">
-        <header>
-            <h2>Response time (last 60 minutes)</h2>
-        </header>
-
-        <div class="metric-data">
-            <div class="info">
-                <p>Average response time: {{ ((responseTimeKeysData|status_sum()) / (requestKeysData|status_sum ? : 1)) |round }} ms</p>
-            </div>
-            <div class="graph">
-                <span class="line" style="display:none">{{ responseTimeKeysData|join(',') }}</span>
-            </div>
-        </div>
-    </section>
-
-    <section class="metric">
-        <header>
-            <h2>Exceptions (last 60 minutes)</h2>
-        </header>
-
-        <div class="metric-data">
-            <div class="info">
-                {{ exceptionData|status_sum }}
-                <p>Exceptions: {{ ((exceptionData|status_sum) * 100 / (requestKeysData|status_sum ? : 1)) |round(4) }} %</p>
-            </div>
-            <div class="graph">
-                <span class="line" style="display:none">{{ exceptionData|join(',') }}</span>
-            </div>
-        </div>
-    </section>
+        </section>
+    {% endfor %}
 {% endblock status_content %}
+
+{% block status_javascripts %}
+    {{ parent() }}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $.fn.peity.defaults.line = {
+                delimiter: ",",
+                fill: "#c6d9fd",
+                height: 80,
+                max: null,
+                min: 0,
+                stroke: "#4d89f9",
+                strokeWidth: 1,
+                width: 250
+            }
+
+            $(".line").show().peity("line");
+        });
+    </script>
+{% endblock status_javascripts %}

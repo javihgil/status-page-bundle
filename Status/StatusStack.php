@@ -21,7 +21,7 @@ class StatusStack
     /**
      * @var StatusInterface[]
      */
-    protected $collection;
+    protected $collection = [];
 
     /**
      * @var array

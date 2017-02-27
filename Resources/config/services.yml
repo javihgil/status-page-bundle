@@ -5,11 +5,25 @@ services:
 
     jhg_status_page.status_flush.event_listener:
         class: Jhg\StatusPageBundle\EventListener\StatusFlushListener
-        arguments: ["@jhg_status_page.status_stack"]
+        arguments: ["@jhg_status_page.status_stack", '@jhg_status_page.watchdogs_processor']
         tags:
             - { name: kernel.event_subscriber }
 
+    jhg_status_page.watchdogs_processor:
+        class: Jhg\StatusPageBundle\WatchDogs\WatchDogProcessor
+        arguments: [ '@jhg_status_page.status_stack', '%jhg_status_page.watchdogs%', '']
+
+    jhg_status_page.watchdogs_reader:
+        class: Jhg\StatusPageBundle\WatchDogs\WatchDogReader
+        arguments: [ '%jhg_status_page.watchdogs%', '']
+
     jhg_status_page.twig_extension:
         class: Jhg\StatusPageBundle\Twig\StatusPageExtension
+        tags:
+            - { name: twig.extension }
+
+    jhg_status_page.watchdog.twig_extension:
+        class: Jhg\StatusPageBundle\Twig\WatchDogExtension
+        arguments: ['@jhg_status_page.watchdogs_reader']
         tags:
             - { name: twig.extension }

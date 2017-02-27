@@ -34,6 +34,17 @@ class Configuration implements ConfigurationInterface
                         ->end() // prototype-children
                     ->end() // prototype
                 ->end() // array
+
+                ->arrayNode('watchdogs')
+                    ->useAttributeAsKey('id')
+                    ->prototype('array')
+                        ->children()
+                            ->scalarNode('expire')->isRequired()->end()
+                            ->scalarNode('condition')->isRequired()->end()
+                            ->integerNode('threshold')->defaultValue(1)->end()
+                        ->end() // prototype-children
+                    ->end() // prototype
+                ->end() // array
             ->end() // root->children
         ;
 

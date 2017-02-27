@@ -22,6 +22,7 @@ class JhgStatusPageExtension extends Extension
 
         $container->setParameter('jhg_status_page.predis_client_id', $config['predis_client_id']);
         $container->setParameter('jhg_status_page.auto_register_guzzle_middleware', $config['auto_register_guzzle_middleware']);
+        $container->setParameter('jhg_status_page.watchdogs', $config['watchdogs']);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');

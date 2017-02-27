@@ -3,7 +3,7 @@
 namespace Jhg\StatusPageBundle;
 
 use Jhg\StatusPageBundle\DependencyInjection\CompilerPass\GuzzleClientsPass;
-use Jhg\StatusPageBundle\DependencyInjection\CompilerPass\StatusStackRedisPass;
+use Jhg\StatusPageBundle\DependencyInjection\CompilerPass\PredisClientPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
@@ -15,7 +15,7 @@ class JhgStatusPageBundle extends Bundle
     public function build(ContainerBuilder $container)
     {
         parent::build($container);
-        $container->addCompilerPass(new StatusStackRedisPass());
+        $container->addCompilerPass(new PredisClientPass());
         $container->addCompilerPass(new GuzzleClientsPass());
     }
 

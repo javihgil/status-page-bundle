@@ -1,6 +1,0 @@
-services:
-    jhg_status_page.request.status_listener:
-        class: Jhg\StatusPageBundle\EventListener\RequestListener
-        arguments: ["@jhg_status_page.status_stack"]
-        tags:
-            - { name: kernel.event_subscriber }

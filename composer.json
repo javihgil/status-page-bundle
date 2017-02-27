@@ -5,9 +5,10 @@
     "prefer-stable": true,
     "minimum-stability": "dev",
     "require": {
-        "snc/redis-bundle": "^2.0.0"
+        "predis/predis": "^1.0.0"
     },
     "suggest": {
+        "snc/redis-bundle": "Provices easy way to configure redis clients, and more useful related features",
         "guzzlehttp/guzzle": "If you use guzzlehttp to call external services, StatusPageBundle can store request stats"
     },
     "autoload": {

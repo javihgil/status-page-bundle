@@ -1,6 +1,0 @@
-services:
-    jhg_status_page.exception.status_listener:
-        class: Jhg\StatusPageBundle\EventListener\ExceptionListener
-        arguments: ["@jhg_status_page.status_stack"]
-        tags:
-            - { name: kernel.event_subscriber }

@@ -19,18 +19,22 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->scalarNode('redis_client_id')->isRequired()->end()
-                ->arrayNode('requests')
-                    ->children()
-                        ->booleanNode('enabled')->defaultTrue()->end()
-                    ->end()
-                ->end()
-                ->arrayNode('response-time')
-                    ->children()
-                        ->booleanNode('enabled')->defaultTrue()->end()
-                    ->end()
-                ->end()
-            ->end()
+                ->scalarNode('predis_client_id')->isRequired()->end()
+                ->booleanNode('auto_register_guzzle_middleware')->defaultTrue()->end()
+                ->arrayNode('metrics')
+                    ->useAttributeAsKey('id')
+                    ->prototype('array')
+                        ->children()
+                            ->enumNode('type')->values(['request_count', 'response_count', 'response_time', 'custom', 'guzzle_request_count', 'guzzle_response_count', 'guzzle_time', 'exception'])->isRequired()->end()
+                            ->enumNode('period')->values(['second', 'minute', 'hour', 'day'])->isRequired()->end()
+                            ->scalarNode('class')->info('Listener class name for custom type')->defaultNull()->end()
+                            ->scalarNode('service')->info('Listener service name for custom type')->defaultNull()->end()
+                            ->scalarNode('expire')->defaultNull()->end()
+                            ->scalarNode('condition')->defaultNull()->end()
+                        ->end() // prototype-children
+                    ->end() // prototype
+                ->end() // array
+            ->end() // root->children
         ;
 
         return $treeBuilder;

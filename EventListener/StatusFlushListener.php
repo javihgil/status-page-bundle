@@ -2,28 +2,31 @@
 
 namespace Jhg\StatusPageBundle\EventListener;
 
-use Jhg\StatusPageBundle\Event\EventManager;
+use Jhg\StatusPageBundle\Status\StatusStack;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\PostResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
-class StatusRecordListener implements EventSubscriberInterface
+class StatusFlushListener implements EventSubscriberInterface
 {
     /**
-     * @var EventManager
+     * @var StatusStack
      */
     protected $eventStack;
 
     /**
      * StatusRecordListener constructor.
      *
-     * @param EventManager $eventStack
+     * @param StatusStack $eventStack
      */
-    public function __construct(EventManager $eventStack)
+    public function __construct(StatusStack $eventStack)
     {
         $this->eventStack = $eventStack;
     }
 
+    /**
+     * @inheritdoc
+     */
     public static function getSubscribedEvents()
     {
         return [
@@ -31,6 +34,9 @@ class StatusRecordListener implements EventSubscriberInterface
         ];
     }
 
+    /**
+     * @inheritdoc
+     */
     public function onTerminateEvent(PostResponseEvent $event)
     {
         $this->eventStack->flush();

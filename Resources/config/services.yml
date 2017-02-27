@@ -1,10 +1,10 @@
 services:
     jhg_status_page.status_stack:
-        class: Jhg\StatusPageBundle\Event\EventManager
-        arguments: [ "@snc_redis.status" ]
+        class: Jhg\StatusPageBundle\Status\StatusStack
+        arguments: [ '' ]
 
-    jhg_status_page.record.event_listener:
-        class: Jhg\StatusPageBundle\EventListener\StatusRecordListener
+    jhg_status_page.status_flush.event_listener:
+        class: Jhg\StatusPageBundle\EventListener\StatusFlushListener
         arguments: ["@jhg_status_page.status_stack"]
         tags:
             - { name: kernel.event_subscriber }

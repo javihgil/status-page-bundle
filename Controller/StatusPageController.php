@@ -38,4 +38,31 @@ class StatusPageController extends Controller
 
         return $this->render('JhgStatusPageBundle:StatusPage:status.html.twig', $viewData);
     }
+
+    /**
+     * @param string $period
+     * @param string $metricId
+     *
+     * @return array
+     */
+    protected function getMetricData($period, $metricId)
+    {
+        $metric = $this->getParameter('jhg_status_page.metrics')[$metricId];
+
+        $date = new \DateTime($period);
+        $now = new \DateTime('now');
+
+        $metricKeys = [];
+
+        while ($date->format('YmdHi') <= $now->format('YmdHi')) {
+            $metricKeys[] = $date->format('YmdHi').':'.$metric['id'];
+            $date->modify('+1 minute');
+        }
+
+        $metricData = $this->get('snc_redis.status')->mget($metricKeys);
+
+        $metricData = array_map(function ($v) { return (int) $v; }, $metricData);
+
+        return $metricData;
+    }
 }

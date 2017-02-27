@@ -1,0 +1,11 @@
+services:
+    jhg_status_page.guzzle_status.stopwatch:
+        class: Symfony\Component\Stopwatch\Stopwatch
+        public: false
+
+    jhg_status_page.guzzle_status.middleware:
+        class: Closure
+        factory: [ 'Jhg\StatusPageBundle\GuzzleHttp\Middleware\StatusMiddlewareFactory', createStatusMiddleware ]
+        arguments: [ '@event_dispatcher' ]
+        tags:
+            - { name: csa_guzzle.middleware, alias: jhg_status_page.guzzle_middleware }

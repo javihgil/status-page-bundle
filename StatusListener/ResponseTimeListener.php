@@ -48,10 +48,13 @@ class ResponseTimeListener extends AbstractStatusListener implements EventSubscr
             return;
         }
 
+        $this->responseTimeEvent->stop();
+
         if ($this->condition) {
             $conditionContext = [
                 'request' => $event->getRequest(),
                 'response' => $event->getResponse(),
+                'duration' => $this->responseTimeEvent->getDuration(),
             ];
 
             if (!$this->evalCondition($conditionContext)) {
@@ -59,7 +62,6 @@ class ResponseTimeListener extends AbstractStatusListener implements EventSubscr
             }
         }
 
-        $this->responseTimeEvent->stop();
         $this->statusStack->registerStatus($this->responseTimeEvent);
     }
 }

@@ -24,6 +24,11 @@ class StatusStack
     protected $collection;
 
     /**
+     * @var array
+     */
+    protected $currentStatuses = [];
+
+    /**
      * StatusStack constructor.
      *
      * @param Client $redis
@@ -50,6 +55,14 @@ class StatusStack
     }
 
     /**
+     * @return array
+     */
+    public function getCurrentStatuses()
+    {
+        return $this->currentStatuses;
+    }
+
+    /**
      * Stores all statuses in redis client
      */
     public function flush()
@@ -70,6 +83,8 @@ class StatusStack
 
                 $this->redis->expire($statusKey, $expirationInSeconds);
             }
+
+            $this->currentStatuses[$status->getKey()] = $value;
         }
     }
 }

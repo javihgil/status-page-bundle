@@ -84,12 +84,20 @@ class StatusChrono implements StatusInterface
     }
 
     /**
-     * @inheritdoc
+     * @return int
      */
-    public function getIncrement()
+    public function getDuration()
     {
         $event = $this->stopwatch->getEvent($this->key);
 
         return $event->getDuration();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getIncrement()
+    {
+        return $this->getDuration();
     }
 }

@@ -41,10 +41,15 @@ class GuzzleResponseTimeListener extends AbstractStatusListener implements Event
      */
     public function stopWatchResponse(GuzzleHttpResponseEvent $event)
     {
+        $requestId = spl_object_hash($event->getRequest());
+
+        $this->responseTimeEvents[$requestId]->stop();
+
         if ($this->condition) {
             $conditionContext = [
                 'request' => $event->getRequest(),
                 'response' => $event->getResponse(),
+                'duration' => $this->responseTimeEvents[$requestId]->getDuration(),
             ];
 
             if (!$this->evalCondition($conditionContext)) {
@@ -52,9 +57,6 @@ class GuzzleResponseTimeListener extends AbstractStatusListener implements Event
             }
         }
 
-        $requestId = spl_object_hash($event->getRequest());
-
-        $this->responseTimeEvents[$requestId]->stop();
         $this->statusStack->registerStatus($this->responseTimeEvents[$requestId]);
     }
 }

@@ -2,13 +2,11 @@
 
 namespace Jhg\StatusPageBundle\GuzzleHttp\Middleware;
 
-use Predis\ClientInterface;
-use Symfony\Component\EventDispatcher\EventDispatcher;
-use Symfony\Component\Stopwatch\Stopwatch;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class StatusMiddlewareFactory
 {
-    public static function createStatusMiddleware(EventDispatcher $eventDispatcher)
+    public static function createStatusMiddleware(EventDispatcherInterface $eventDispatcher)
     {
         return new StatusMiddleware($eventDispatcher);
     }

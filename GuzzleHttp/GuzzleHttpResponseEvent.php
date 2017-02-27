@@ -4,8 +4,9 @@ namespace Jhg\StatusPageBundle\GuzzleHttp;
 
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Symfony\Component\EventDispatcher\Event;
 
-class GuzzleHttpResponseEvent
+class GuzzleHttpResponseEvent extends Event
 {
     /**
      * @var RequestInterface

@@ -8,20 +8,21 @@ use Jhg\StatusPageBundle\GuzzleHttp\GuzzleHttpRequestEvent;
 use Jhg\StatusPageBundle\GuzzleHttp\GuzzleHttpResponseEvent;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class StatusMiddleware
 {
     /**
-     * @var EventDispatcher
+     * @var EventDispatcherInterface
      */
     protected $eventDispatcher;
 
     /**
      * StatusMiddleware constructor.
-     * @param EventDispatcher $eventDispatcher
+     *
+     * @param EventDispatcherInterface $eventDispatcher
      */
-    public function __construct(EventDispatcher $eventDispatcher)
+    public function __construct(EventDispatcherInterface $eventDispatcher)
     {
         $this->eventDispatcher = $eventDispatcher;
     }

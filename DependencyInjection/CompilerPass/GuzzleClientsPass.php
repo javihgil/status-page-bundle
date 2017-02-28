@@ -13,6 +13,10 @@ class GuzzleClientsPass implements CompilerPassInterface
             return;
         }
 
+        if (!$container->hasDefinition('jhg_status_page.guzzle_status.middleware')){
+            return;
+        }
+
         foreach ($container->findTaggedServiceIds('csa_guzzle.client') as $id => $attr) {
             $guzzleClientDefinition = $container->getDefinition($id);
             $guzzleClientDefinition->clearTag('csa_guzzle.client');

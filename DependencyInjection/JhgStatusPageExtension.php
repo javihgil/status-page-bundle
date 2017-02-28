@@ -31,7 +31,7 @@ class JhgStatusPageExtension extends Extension
         $metrics = [];
         $loadGuzzleMiddleware = false;
         foreach ($config['metrics'] as $metricId => $metric) {
-            $loadGuzzleMiddleware |= in_array($metric['type'], ['guzzle_request_counter', 'guzzle_response_count', 'guzzle_response_time']);
+            $loadGuzzleMiddleware |= in_array($metric['type'], ['guzzle_request_count', 'guzzle_response_count', 'guzzle_response_time']);
             $this->loadMetric($metric + ['id' => $metricId], $container);
             $metrics[$metricId] = $metric + ['id' => $metricId];
         }

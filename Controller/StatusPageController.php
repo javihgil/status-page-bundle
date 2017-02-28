@@ -2,6 +2,7 @@
 
 namespace Jhg\StatusPageBundle\Controller;
 
+use Jhg\StatusPageBundle\Status\StatusStack;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\HttpFoundation\Response;
@@ -79,12 +80,31 @@ class StatusPageController extends Controller
 
         $metricKeys = [];
 
-        while ($date->format('YmdHi') <= $now->format('YmdHi')) {
-            $metricKeys[] = $date->format('YmdHi').':'.$metric['id'];
-            $date->modify('+1 minute');
+        $metricFormat = StatusStack::TIME_MARK_FORMATS[$metric['period']];
+
+        switch ($metric['period']) {
+            case 'second':
+                $dateModify = '+1 second';
+                break;
+            case 'minute':
+                $dateModify = '+1 minute';
+                break;
+            case 'hour':
+                $dateModify = '+1 hour';
+                break;
+            case 'day':
+                $dateModify = '+1 day';
+                break;
+            default:
+                throw new \RuntimeException(sprintf('Invalid period %s for metric render', $metric['period']));
         }
 
-        $metricData = $this->get('snc_redis.status')->mget($metricKeys);
+        while ($date->format($metricFormat) <= $now->format($metricFormat)) {
+            $metricKeys[] = $date->format('YmdHi').':'.$metric['id'];
+            $date->modify($dateModify);
+        }
+
+        $metricData = $this->get($this->getParameter('jhg_status_page.predis_client_id'))->mget($metricKeys);
 
         $metricData = array_map(function ($v) { return (int) $v; }, $metricData);
 

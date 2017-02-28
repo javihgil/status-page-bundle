@@ -29,6 +29,11 @@ class StatusStack
     protected $currentStatuses = [];
 
     /**
+     * @var array
+     */
+    protected $currentStatusIncrements = [];
+
+    /**
      * StatusStack constructor.
      *
      * @param Client $redis
@@ -63,6 +68,14 @@ class StatusStack
     }
 
     /**
+     * @return array
+     */
+    public function getCurrentStatusIncrements()
+    {
+        return $this->currentStatusIncrements;
+    }
+
+    /**
      * Stores all statuses in redis client
      */
     public function flush()
@@ -74,7 +87,10 @@ class StatusStack
 
             $value = $this->redis->incrby($statusKey, $increment);
 
-            if ($value == $increment) {
+            $this->currentStatuses[$status->getKey()] = $value;
+            $this->currentStatusIncrements[$status->getKey()] = $increment;
+
+            if ($status->getExpire() !== null && $value == $increment) {
                 if (is_numeric($status->getExpire())) {
                     $expirationInSeconds = (int) $status->getExpire();
                 } else {
@@ -83,8 +99,6 @@ class StatusStack
 
                 $this->redis->expire($statusKey, $expirationInSeconds);
             }
-
-            $this->currentStatuses[$status->getKey()] = $value;
         }
     }
 }

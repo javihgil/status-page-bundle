@@ -11,7 +11,7 @@ services:
 
     jhg_status_page.watchdogs_processor:
         class: Jhg\StatusPageBundle\WatchDogs\WatchDogProcessor
-        arguments: [ '@jhg_status_page.status_stack', '%jhg_status_page.watchdogs%', '']
+        arguments: [ '@jhg_status_page.status_stack', '%jhg_status_page.watchdogs%', '', '@security.expression_language']
 
     jhg_status_page.watchdogs_reader:
         class: Jhg\StatusPageBundle\WatchDogs\WatchDogReader

@@ -5,6 +5,7 @@ namespace Jhg\StatusPageBundle\WatchDogs;
 use Jhg\StatusPageBundle\Status\StatusStack;
 use Predis\Client;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
+use Symfony\Component\ExpressionLanguage\SyntaxError;
 
 class WatchDogProcessor
 {
@@ -31,16 +32,17 @@ class WatchDogProcessor
     /**
      * WatchDogProcessor constructor.
      *
-     * @param StatusStack $statusStack
-     * @param array       $watchDogs
-     * @param Client      $redis
+     * @param StatusStack             $statusStack
+     * @param array                   $watchDogs
+     * @param Client                  $redis
+     * @param ExpressionLanguage|null $expressionLanguage
      */
-    public function __construct(StatusStack $statusStack, array $watchDogs, Client $redis)
+    public function __construct(StatusStack $statusStack, array $watchDogs, Client $redis, ExpressionLanguage $expressionLanguage = null)
     {
         $this->statusStack = $statusStack;
         $this->watchDogs = $watchDogs;
         $this->redis = $redis;
-        $this->expresionLanguage = new ExpressionLanguage();
+        $this->expresionLanguage = $expressionLanguage ?: new ExpressionLanguage();
     }
 
     /**
@@ -54,16 +56,21 @@ class WatchDogProcessor
             $watchDogKey = 'watchdogs:'.$watchDogId;
 
             $values = [
-                'metrics' => $this->statusStack->getCurrentStatuses(),
+                'period' => $this->statusStack->getCurrentStatuses(),
+                'current' => $this->statusStack->getCurrentStatusIncrements(),
             ];
 
-            if ($this->expresionLanguage->evaluate($condition, $values)) {
-                $this->redis->incr($watchDogKey);
+            try {
+                if ($this->expresionLanguage->evaluate($condition, $values)) {
+                    $this->redis->incr($watchDogKey);
 
-                if ($expire) {
-                    $expirationInSeconds = is_numeric($expire) ? (int) $expire : strtotime($expire , time()) - time();
-                    $this->redis->expire($watchDogKey, $expirationInSeconds);
+                    if ($expire) {
+                        $expirationInSeconds = is_numeric($expire) ? (int)$expire : strtotime($expire, time()) - time();
+                        $this->redis->expire($watchDogKey, $expirationInSeconds);
+                    }
                 }
+            } catch (SyntaxError $e) {
+
             }
         }
     }

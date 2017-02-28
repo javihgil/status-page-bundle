@@ -5,6 +5,7 @@ namespace Jhg\StatusPageBundle\StatusListener;
 use Jhg\StatusPageBundle\Status\StatusStack;
 use Jhg\StatusPageBundle\Status\StatusStackAwareInterface;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
+use Symfony\Component\ExpressionLanguage\SyntaxError;
 
 /**
  * Class AbstractStatusListener
@@ -85,6 +86,7 @@ abstract class AbstractStatusListener implements StatusStackAwareInterface, Stat
      * @param array $context
      *
      * @return bool
+     * @throws Exception\InvalidConditionException
      */
     protected function evalCondition(array $context)
     {
@@ -96,6 +98,10 @@ abstract class AbstractStatusListener implements StatusStackAwareInterface, Stat
             $this->expresionLanguage = new ExpressionLanguage();
         }
 
-        return $this->expresionLanguage->evaluate($this->condition, $context);
+        try {
+            return $this->expresionLanguage->evaluate($this->condition, $context);
+        } catch (SyntaxError $e) {
+            throw new Exception\InvalidConditionException(sprintf('Invalid condition syntax for %s status page metric.', $this->eventKey), 0, $e);
+        }
     }
 }

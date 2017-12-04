@@ -81,24 +81,32 @@ class StatusStack
     public function flush()
     {
         foreach ($this->collection as $status) {
-            $timeMark = date(self::TIME_MARK_FORMATS[$status->getPeriod()]);
-            $statusKey = sprintf('%s:%s', $timeMark, $status->getKey());
-            $increment = $status->getIncrement();
+            $this->flushStatus($status);
+        }
+    }
 
-            $value = $this->redis->incrby($statusKey, $increment);
+    /**
+     * @param StatusInterface $status
+     */
+    public function flushStatus(StatusInterface $status)
+    {
+        $timeMark = date(self::TIME_MARK_FORMATS[$status->getPeriod()]);
+        $statusKey = sprintf('%s:%s', $timeMark, $status->getKey());
+        $increment = $status->getIncrement();
 
-            $this->currentStatuses[$status->getKey()] = $value;
-            $this->currentStatusIncrements[$status->getKey()] = $increment;
+        $value = $this->redis->incrby($statusKey, $increment);
 
-            if ($status->getExpire() !== null && $value == $increment) {
-                if (is_numeric($status->getExpire())) {
-                    $expirationInSeconds = (int) $status->getExpire();
-                } else {
-                    $expirationInSeconds = strtotime($status->getExpire() , time()) - time();
-                }
+        $this->currentStatuses[$status->getKey()] = $value;
+        $this->currentStatusIncrements[$status->getKey()] = $increment;
 
-                $this->redis->expire($statusKey, $expirationInSeconds);
+        if ($status->getExpire() !== null && $value == $increment) {
+            if (is_numeric($status->getExpire())) {
+                $expirationInSeconds = (int) $status->getExpire();
+            } else {
+                $expirationInSeconds = strtotime($status->getExpire() , time()) - time();
             }
+
+            $this->redis->expire($statusKey, $expirationInSeconds);
         }
     }
 }

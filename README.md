@@ -80,7 +80,7 @@ For example, if you want to store each FOSUserBundle success register, you can i
     jhg_status_page:
         predis_client_id: predis_service_id
         metrics:
-            requests_per_minute:
+            registration_success_count:
                 type: custom
                 class: AppBundle\StatusListener\RegistrationStatusListener
                 period: minute

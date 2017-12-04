@@ -1,9 +1,8 @@
 {
     "name": "javihgil/status-page-bundle",
+    "type": "symfony-bundle",
     "license": "MIT",
     "description": "Stores some metrics in Redis and provides a status page for Symfony projects",
-    "prefer-stable": true,
-    "minimum-stability": "dev",
     "require": {
         "predis/predis": "^1.0.0"
     },

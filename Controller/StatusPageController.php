@@ -100,7 +100,7 @@ class StatusPageController extends Controller
         }
 
         while ($date->format($metricFormat) <= $now->format($metricFormat)) {
-            $metricKeys[] = $date->format('YmdHi').':'.$metric['id'];
+            $metricKeys[] = $date->format($metricFormat).':'.$metric['id'];
             $date->modify($dateModify);
         }
 

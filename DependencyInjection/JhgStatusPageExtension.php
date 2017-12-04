@@ -97,6 +97,9 @@ class JhgStatusPageExtension extends Extension
                 }
                 break;
 
+            case 'readonly':
+                return;
+
             default:
                 throw new InvalidConfigurationException(sprintf('Listener for %s type is not yet implemented', $metric['type']));
         }

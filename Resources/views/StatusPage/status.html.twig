@@ -11,7 +11,7 @@
 
             <div class="metric-data">
                 <div class="info">
-                    {% if metric.type in ['request_count', 'response_count', 'guzzle_request_count', 'guzzle_response_count', 'custom', 'exception'] %}
+                    {% if metric.type in ['request_count', 'response_count', 'guzzle_request_count', 'guzzle_response_count', 'custom', 'exception', 'readonly'] %}
                         <p>{{ metric.data|status_sum|round }} reqs</p>
                         <p>{{ metric.data|status_average|round }} req/minute</p>
                     {% elseif metric.average_by %}

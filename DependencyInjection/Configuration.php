@@ -26,7 +26,7 @@ class Configuration implements ConfigurationInterface
                     ->prototype('array')
                         ->children()
                             ->enumNode('type')->values(['request_count', 'response_count', 'response_time', 'custom', 'guzzle_request_count', 'guzzle_response_count', 'guzzle_response_time', 'exception', 'readonly'])->isRequired()->end()
-                            ->enumNode('period')->values(['second', 'minute', 'hour', 'day'])->isRequired()->end()
+                            ->enumNode('period')->values(['second', 'minute', 'hour', 'day', 'total'])->isRequired()->end()
                             ->scalarNode('class')->info('Listener class name for custom type')->defaultNull()->end()
                             ->scalarNode('service')->info('Listener service name for custom type')->defaultNull()->end()
                             ->scalarNode('expire')->defaultNull()->end()

@@ -90,8 +90,13 @@ class StatusStack
      */
     public function flushStatus(StatusInterface $status)
     {
-        $timeMark = date(self::TIME_MARK_FORMATS[$status->getPeriod()]);
-        $statusKey = sprintf('%s:%s', $timeMark, $status->getKey());
+        if ($status->getPeriod() == 'total') {
+            $statusKey = sprintf('total:%s', $status->getKey());
+        } else {
+            $timeMark = date(self::TIME_MARK_FORMATS[$status->getPeriod()]);
+            $statusKey = sprintf('%s:%s', $timeMark, $status->getKey());
+        }
+
         $increment = $status->getIncrement();
 
         $value = $this->redis->incrby($statusKey, $increment);
@@ -99,7 +104,7 @@ class StatusStack
         $this->currentStatuses[$status->getKey()] = $value;
         $this->currentStatusIncrements[$status->getKey()] = $increment;
 
-        if ($status->getExpire() !== null && $value == $increment) {
+        if ($status->getExpire() !== null && $status->getExpire() != 'never' && $value == $increment) {
             if (is_numeric($status->getExpire())) {
                 $expirationInSeconds = (int) $status->getExpire();
             } else {

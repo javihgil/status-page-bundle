@@ -18,10 +18,14 @@ class PredisClientPass implements CompilerPassInterface
         $statusStackDefinition = $container->getDefinition('jhg_status_page.status_stack');
         $statusStackDefinition->replaceArgument(0, new Reference($predisClientId));
 
-        $watchdogsProcessorDefinition = $container->getDefinition('jhg_status_page.watchdogs_processor');
-        $watchdogsProcessorDefinition->replaceArgument(2, new Reference($predisClientId));
+        if ($container->hasDefinition('jhg_status_page.watchdogs_processor')) {
+            $watchdogsProcessorDefinition = $container->getDefinition('jhg_status_page.watchdogs_processor');
+            $watchdogsProcessorDefinition->replaceArgument(2, new Reference($predisClientId));
+        }
 
-        $watchdogsReaderDefinition = $container->getDefinition('jhg_status_page.watchdogs_reader');
-        $watchdogsReaderDefinition->replaceArgument(1, new Reference($predisClientId));
+        if ($container->hasDefinition('jhg_status_page.watchdogs_reader')) {
+            $watchdogsReaderDefinition = $container->getDefinition('jhg_status_page.watchdogs_reader');
+            $watchdogsReaderDefinition->replaceArgument(1, new Reference($predisClientId));
+        }
     }
 }

@@ -26,7 +26,7 @@ class StatusFlushListener implements EventSubscriberInterface
      * @param StatusStack       $eventStack
      * @param WatchDogProcessor $watchDogProcessor
      */
-    public function __construct(StatusStack $eventStack, WatchDogProcessor $watchDogProcessor)
+    public function __construct(StatusStack $eventStack, WatchDogProcessor $watchDogProcessor = null)
     {
         $this->eventStack = $eventStack;
         $this->watchDogProcessor = $watchDogProcessor;
@@ -48,6 +48,9 @@ class StatusFlushListener implements EventSubscriberInterface
     public function onTerminateEvent(PostResponseEvent $event)
     {
         $this->eventStack->flush();
-        $this->watchDogProcessor->process();
+
+        if ($this->watchDogProcessor) {
+            $this->watchDogProcessor->process();
+        }
     }
 }

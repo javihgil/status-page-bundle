@@ -41,6 +41,13 @@ class JhgStatusPageExtension extends Extension
         if ($loadGuzzleMiddleware) {
             $loader->load('services/guzzle-middleware.yml');
         }
+
+        if (!empty($config['watchdogs'])) {
+            $loader->load('services/watchdogs.yml');
+
+            $statusFlushEventListener = $container->getDefinition('jhg_status_page.status_flush.event_listener');
+            $statusFlushEventListener->setArgument(1, $container->getDefinition('jhg_status_page.watchdogs_processor'));
+        }
     }
 
     /**

@@ -2,7 +2,7 @@
 
 namespace Jhg\StatusPageBundle\Controller;
 
-use Jhg\StatusPageBundle\Status\StatusStack;
+use Jhg\StatusPageBundle\Reader\MetricReader;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,12 +14,15 @@ class StatusPageController extends Controller
         $viewConfig = $this->getViewConfig($view);
         $metricsConfig = $this->getParameter('jhg_status_page.metrics');
 
+        /** @var MetricReader $metricReader */
+        $metricReader = $this->get('jhg_status_page.metric_reader');
+
         $metrics = [];
         foreach ($viewConfig['metrics'] as $id => $metric) {
             $metrics[$id] = [
                 'title' => $metric['title'],
                 'average_by' => !empty($metric['average_by']) ? $metric['average_by'] : null,
-                'data' => $this->getMetricData($metric['period'], $metricsConfig[$metric['metric_id']]),
+                'data' => $metricReader->getMetricData($metric['period'], $metricsConfig[$metric['metric_id']]),
                 'type' => $metricsConfig[$metric['metric_id']]['type'],
             ];
         }
@@ -65,49 +68,5 @@ class StatusPageController extends Controller
         }
 
         return $viewsConfig[$view];
-    }
-
-    /**
-     * @param string $period
-     * @param array  $metric
-     *
-     * @return array
-     */
-    protected function getMetricData($period, array $metric)
-    {
-        $date = new \DateTime($period);
-        $now = new \DateTime('now');
-
-        $metricKeys = [];
-
-        $metricFormat = StatusStack::TIME_MARK_FORMATS[$metric['period']];
-
-        switch ($metric['period']) {
-            case 'second':
-                $dateModify = '+1 second';
-                break;
-            case 'minute':
-                $dateModify = '+1 minute';
-                break;
-            case 'hour':
-                $dateModify = '+1 hour';
-                break;
-            case 'day':
-                $dateModify = '+1 day';
-                break;
-            default:
-                throw new \RuntimeException(sprintf('Invalid period %s for metric render', $metric['period']));
-        }
-
-        while ($date->format($metricFormat) <= $now->format($metricFormat)) {
-            $metricKeys[] = $date->format($metricFormat).':'.$metric['id'];
-            $date->modify($dateModify);
-        }
-
-        $metricData = $this->get($this->getParameter('jhg_status_page.predis_client_id'))->mget($metricKeys);
-
-        $metricData = array_map(function ($v) { return (int) $v; }, $metricData);
-
-        return $metricData;
     }
 }

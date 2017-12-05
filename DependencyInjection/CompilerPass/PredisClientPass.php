@@ -27,5 +27,10 @@ class PredisClientPass implements CompilerPassInterface
             $watchdogsReaderDefinition = $container->getDefinition('jhg_status_page.watchdogs_reader');
             $watchdogsReaderDefinition->replaceArgument(1, new Reference($predisClientId));
         }
+
+        if ($container->hasDefinition('jhg_status_page.metric_reader')) {
+            $watchdogsReaderDefinition = $container->getDefinition('jhg_status_page.metric_reader');
+            $watchdogsReaderDefinition->replaceArgument(0, new Reference($predisClientId));
+        }
     }
 }

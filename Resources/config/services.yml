@@ -13,3 +13,8 @@ services:
         class: Jhg\StatusPageBundle\Twig\StatusPageExtension
         tags:
             - { name: twig.extension }
+
+    jhg_status_page.metric_reader:
+        class: Jhg\StatusPageBundle\Reader\MetricReader
+        arguments: ['']
+        public: true
